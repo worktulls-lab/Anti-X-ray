@@ -1,0 +1,87 @@
+# ============================================================
+#  TarkMullAntiXray 2.0 — детектор X-Ray
+#
+#  ВАЖНО: плагин НЕ прячет руды. Скрытием занимается встроенный
+#  анти-ксрей Paper, и включить его нужно вручную:
+#
+#    config/paper-world-defaults.yml (при остановленном сервере)
+#      anticheat:
+#        anti-xray:
+#          enabled: true
+#          engine-mode: 2
+#          max-block-height: 64
+#
+#  Проверить, что всё включено: /antixray check
+# ============================================================
+
+general:
+  # Режимы игры, которые детектор игнорирует.
+  # Пустой список = следить за всеми, включая креатив.
+  exempt-gamemodes: []
+  worlds:
+    # BLACKLIST — следить везде, кроме списка. WHITELIST — только в списке.
+    mode: BLACKLIST
+    list: []
+
+detector:
+  enabled: true
+
+  # Пока игрок не пробил столько блоков породы, алертов не будет
+  min-blocks-mined: 400
+
+  # Счёт = взвешенные "закрытые" руды на 1000 блоков породы.
+  # Честная копка: 5-20. X-Ray: сотни.
+  alert-threshold: 45.0
+  alert-cooldown-seconds: 120
+  console-alerts: true
+  log-to-file: true
+
+  # Не считать блоки, которые игрок сам поставил, — защита от накрутки
+  ignore-self-placed: true
+
+  # Статистика постепенно стареет
+  decay:
+    interval-seconds: 300
+    factor: 0.8
+
+  count-as-stone:
+    - STONE
+    - COBBLESTONE
+    - DEEPSLATE
+    - COBBLED_DEEPSLATE
+    - ANDESITE
+    - DIORITE
+    - GRANITE
+    - TUFF
+    - CALCITE
+    - DRIPSTONE_BLOCK
+    - GRAVEL
+    - NETHERRACK
+    - BASALT
+    - BLACKSTONE
+    - END_STONE
+
+  ore-weights:
+    ANCIENT_DEBRIS: 4.0
+    DIAMOND_ORE: 3.0
+    DEEPSLATE_DIAMOND_ORE: 3.0
+    EMERALD_ORE: 2.0
+    DEEPSLATE_EMERALD_ORE: 2.0
+    GOLD_ORE: 1.0
+    DEEPSLATE_GOLD_ORE: 1.0
+    NETHER_GOLD_ORE: 0.3
+    LAPIS_ORE: 0.6
+    DEEPSLATE_LAPIS_ORE: 0.6
+    REDSTONE_ORE: 0.3
+    DEEPSLATE_REDSTONE_ORE: 0.3
+    IRON_ORE: 0.4
+    DEEPSLATE_IRON_ORE: 0.4
+    COPPER_ORE: 0.2
+    DEEPSLATE_COPPER_ORE: 0.2
+    COAL_ORE: 0.15
+    DEEPSLATE_COAL_ORE: 0.15
+    NETHER_QUARTZ_ORE: 0.2
+
+messages:
+  prefix: '<gray>[<aqua>AntiXray</aqua>]</gray> '
+  alert: '<red>Подозрение на X-Ray:</red> <white><player></white> <gray>(счёт <yellow><score></yellow>, порог <threshold>)</gray><newline><gray>Руды: <white><ores></white></gray><newline><gray>Породы пробито: <white><stone></white> | <white><x> <y> <z></white> (<world>)</gray>'

@@ -1,0 +1,25 @@
+name: TarkMullAntiXray
+version: '${project.version}'
+main: ru.tarkmull.antixray.TarkMullAntiXray
+api-version: '26.2'
+authors: [TarkMull]
+description: 'Детектор X-Ray по характеру копки: счёт, алерты, логи'
+folia-supported: true
+
+commands:
+  antixray:
+    description: Детектор X-Ray
+    aliases: [axr, ax]
+    permission: antixray.admin
+    usage: /antixray help
+
+permissions:
+  antixray.admin:
+    description: Доступ к команде /antixray
+    default: op
+  antixray.alerts:
+    description: Получать оповещения о подозрении на X-Ray
+    default: op
+  antixray.bypass:
+    description: Не попадать в статистику детектора
+    default: false
