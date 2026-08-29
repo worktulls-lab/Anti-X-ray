@@ -1,0 +1,145 @@
+# ============================================================
+#  TarkMullAntiXray
+#  Работает поверх встроенного анти-ксрея Paper, не заменяет его.
+#  Обязательно включите engine-mode 2 в config/paper-world-defaults.yml
+#  (см. README.md) — это основная линия защиты, плагин её дополняет.
+# ============================================================
+
+general:
+  # Игроки в этих режимах игнорируются полностью
+  exempt-gamemodes:
+    - CREATIVE
+    - SPECTATOR
+  worlds:
+    # BLACKLIST — работать везде, кроме перечисленных
+    # WHITELIST — работать только в перечисленных
+    mode: BLACKLIST
+    list:
+      - creative_world
+
+# ------------------------------------------------------------
+# Модуль 1. Скрытие руд по дистанции (proximity hider)
+# Пока игрок дальше radius блоков, руда показывается ему камнем.
+# ------------------------------------------------------------
+hider:
+  enabled: true
+
+  # На каком расстоянии руда становится видимой. Больше = безопаснее и тяжелее.
+  radius: 20
+
+  # Как часто проверять, не подошёл ли игрок к скрытым блокам (1 тик = 50 мс)
+  check-interval-ticks: 10
+
+  # Прятать только руды, полностью окружённые непрозрачными блоками.
+  # true — руды в пещерах видно нормально, нагрузка ниже, "мигания" почти нет.
+  # false — прячется всё подряд, защита жёстче, но заметнее подгрузка.
+  only-enclosed: true
+
+  # Предохранители от перерасхода памяти и лагов
+  max-hidden-per-player: 40000
+  max-reveal-per-tick: 512
+
+  scan:
+    # Диапазон высот, который вообще сканируется
+    min-y: -64
+    max-y: 96
+    # Сколько секунд держать результат сканирования чанка в кэше
+    cache-seconds: 60
+
+  replacement:
+    overworld: STONE
+    deepslate: DEEPSLATE
+    nether: NETHERRACK
+    end: END_STONE
+    # Ниже этой высоты вместо камня подставляется глубинный сланец
+    deepslate-below-y: 0
+
+  # Что прятать. Незнакомые имена блоков просто игнорируются с предупреждением,
+  # так что список можно дополнять под новые версии игры.
+  hide-blocks:
+    - DIAMOND_ORE
+    - DEEPSLATE_DIAMOND_ORE
+    - ANCIENT_DEBRIS
+    - EMERALD_ORE
+    - DEEPSLATE_EMERALD_ORE
+    - GOLD_ORE
+    - DEEPSLATE_GOLD_ORE
+    - NETHER_GOLD_ORE
+    - IRON_ORE
+    - DEEPSLATE_IRON_ORE
+    - REDSTONE_ORE
+    - DEEPSLATE_REDSTONE_ORE
+    - LAPIS_ORE
+    - DEEPSLATE_LAPIS_ORE
+    - COPPER_ORE
+    - DEEPSLATE_COPPER_ORE
+    - COAL_ORE
+    - DEEPSLATE_COAL_ORE
+    - NETHER_QUARTZ_ORE
+    # Блоки с инвентарём (сундуки, спавнеры) сюда добавлять НЕ нужно:
+    # их корректно прячет только встроенный анти-ксрей Paper.
+
+# ------------------------------------------------------------
+# Модуль 2. Статистический детектор
+# Счёт = взвешенное число "закрытых" руд на 1000 пробитых блоков породы.
+# Честная копка обычно даёт 5–20, X-Ray — сотни.
+# ------------------------------------------------------------
+detector:
+  enabled: true
+
+  # Пока игрок не пробил столько блоков породы, алертов не будет
+  min-blocks-mined: 400
+
+  alert-threshold: 45.0
+  alert-cooldown-seconds: 120
+  console-alerts: true
+  log-to-file: true
+
+  # Статистика постепенно "стареет", чтобы старые сессии не копились вечно
+  decay:
+    interval-seconds: 300
+    factor: 0.8
+
+  # Что считается породой (знаменатель счёта)
+  count-as-stone:
+    - STONE
+    - COBBLESTONE
+    - DEEPSLATE
+    - COBBLED_DEEPSLATE
+    - ANDESITE
+    - DIORITE
+    - GRANITE
+    - TUFF
+    - CALCITE
+    - DRIPSTONE_BLOCK
+    - GRAVEL
+    - NETHERRACK
+    - BASALT
+    - BLACKSTONE
+    - END_STONE
+
+  # Вес каждой руды. Чем реже руда — тем выше вес.
+  ore-weights:
+    ANCIENT_DEBRIS: 4.0
+    DIAMOND_ORE: 3.0
+    DEEPSLATE_DIAMOND_ORE: 3.0
+    EMERALD_ORE: 2.0
+    DEEPSLATE_EMERALD_ORE: 2.0
+    GOLD_ORE: 1.0
+    DEEPSLATE_GOLD_ORE: 1.0
+    NETHER_GOLD_ORE: 0.3
+    LAPIS_ORE: 0.6
+    DEEPSLATE_LAPIS_ORE: 0.6
+    REDSTONE_ORE: 0.3
+    DEEPSLATE_REDSTONE_ORE: 0.3
+    IRON_ORE: 0.4
+    DEEPSLATE_IRON_ORE: 0.4
+    COPPER_ORE: 0.2
+    DEEPSLATE_COPPER_ORE: 0.2
+    COAL_ORE: 0.15
+    DEEPSLATE_COAL_ORE: 0.15
+    NETHER_QUARTZ_ORE: 0.2
+
+messages:
+  prefix: '<gray>[<aqua>AntiXray</aqua>]</gray> '
+  alert: '<red>Подозрение на X-Ray:</red> <white><player></white> <gray>(счёт <yellow><score></yellow>, порог <threshold>)</gray><newline><gray>Руды: <white><ores></white></gray><newline><gray>Породы пробито: <white><stone></white> | <white><x> <y> <z></white> (<world>)</gray>'
